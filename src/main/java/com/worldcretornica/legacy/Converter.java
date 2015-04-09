@@ -2,72 +2,36 @@ package com.worldcretornica.legacy;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.KeyStroke;
 
-public class Converter extends JDialog {
+public class Converter extends JPanel {
 
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
-    private JRadioButton mySQL;
-    private JRadioButton sqlite;
+    private JButton convertButton;
+    private JButton exitButton;
 
     public Converter() {
-        setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener(new ActionListener() {
+        exitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onOK();
+
             }
         });
-
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-    }
-
-    private void onOK() {
-        // add your code here
-        dispose();
-    }
-
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
     }
 
     public static void main(String[] args) {
-        Converter dialog = new Converter();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
+        JFrame window = new JFrame("PlotMe LegacyConverter");
+        Converter panel = new Converter();
+        window.setContentPane(panel);
+        window.setVisible(true);
+        panel.setVisible(true);
     }
+
+    public void actionPerformed(ActionEvent e) {
+
+    }
+
 }

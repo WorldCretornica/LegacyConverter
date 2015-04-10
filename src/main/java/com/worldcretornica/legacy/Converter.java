@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 public class Converter extends JPanel {
 
-    private JPanel contentPane;
+    private static JPanel contentPane;
     private JButton convertButton;
     private JButton exitButton;
 
@@ -24,10 +24,10 @@ public class Converter extends JPanel {
 
     public static void main(String[] args) {
         JFrame window = new JFrame("PlotMe LegacyConverter");
-        Converter panel = new Converter();
-        window.setContentPane(panel);
+        contentPane = new Converter();
+        window.setContentPane(contentPane);
         window.setVisible(true);
-        panel.setVisible(true);
+        contentPane.setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {

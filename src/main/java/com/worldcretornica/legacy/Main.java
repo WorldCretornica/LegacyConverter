@@ -99,6 +99,7 @@ public class Main extends JDialog {
 
     public static void main(String[] args) {
         Main dialog = new Main();
+        dialog.setTitle("PlotMe LegacyConverter");
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

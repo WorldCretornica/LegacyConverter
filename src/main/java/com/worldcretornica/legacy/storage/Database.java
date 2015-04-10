@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public abstract class Database {
 
-    public Connection connection;
+    Connection connection;
 
     /**
      * Closes the connecection to the database.
@@ -27,13 +27,13 @@ public abstract class Database {
         }
     }
 
-    public abstract Connection startConnection();
+    protected abstract Connection startConnection();
 
     /**
      * The database connection
      * @return the connection to the database
      */
-    public Connection getConnection() {
+    Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 return startConnection();

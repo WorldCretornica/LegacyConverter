@@ -1,13 +1,26 @@
 package com.worldcretornica.legacy.storage;
 
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteDataSource;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class SQLiteConnector extends Database {
+
+    private final String url;
+    private SQLiteConfig sqliteConfig;
+    private SQLiteDataSource dataSource;
+
+    public SQLiteConnector(String url) {
+
+        this.url = url;
+    }
 
     /**
      * Establish a connection to the plotme database
@@ -16,11 +29,13 @@ public class SQLiteConnector extends Database {
     @Override
     public Connection startConnection() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + "" + "/plotmecore.db");
+            new Properties();
+            sqliteConfig = new SQLiteConfig();
+            connection = sqliteConfig.createConnection(url);
+            dataSource = new SQLiteDataSource(sqliteConfig);
             connection.setAutoCommit(false);
             return connection;
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             return connection;
         }
     }

@@ -11,9 +11,9 @@ public class MySQLConnector extends Database {
 
     private final String url;
     private final String userName;
-    private final String password;
+    private final char[] password;
 
-    public MySQLConnector(String url, String userName, String password) {
+    public MySQLConnector(String url, String userName, char[] password) {
         this.url = url;
         this.userName = userName;
         this.password = password;

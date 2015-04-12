@@ -1,5 +1,8 @@
 package com.worldcretornica.legacy;
 
+import com.worldcretornica.legacy.storage.MySQLConnector;
+import com.worldcretornica.legacy.storage.SQLiteConnector;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,6 +34,7 @@ public class Main extends JDialog {
     private JPanel mySQLOptions;
     private JPanel sqlliteOptions;
     private JButton choosePlotMeDatabaseFileButton;
+    private JTextField mySQLURL;
     private ButtonGroup databaseButtons;
     private File sqliteFile = null;
     private File sqliteFileDirectory = null;
@@ -100,6 +104,7 @@ public class Main extends JDialog {
     public static void main(String[] args) {
         Main dialog = new Main();
         dialog.setTitle("PlotMe LegacyConverter");
+        dialog.setSize(3000, 3000);
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
@@ -107,9 +112,9 @@ public class Main extends JDialog {
 
     private void onOK() {
         if (mySQLRadioButton.isSelected()) {
-
+            new MySQLConnector(mySQLURL.getText(), username.getText(), password.getPassword());
         } else if (SQLiteRadioButton.isSelected()) {
-
+            new SQLiteConnector(sqliteFile.)
         } else {
             //error
         }

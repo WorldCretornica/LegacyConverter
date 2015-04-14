@@ -118,8 +118,6 @@ public class Main extends JDialog {
             sqlConnector = new MySQLConnector(mySQLURL.getText(), username.getText(), password.getPassword());
         } else if (SQLiteRadioButton.isSelected()) {
             sqlConnector = new SQLiteConnector(sqliteFile, sqliteFileDirectory);
-        } else {
-            //error
         }
         sqlConnector.createTables();
         sqlConnector.legacyConverter();

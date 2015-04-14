@@ -47,7 +47,6 @@ public abstract class Database {
     public abstract void createTables();
 
     public void legacyConverter() {
-
         Runnable legacy = (new Runnable() {
             @Override
             public void run() {
@@ -149,12 +148,6 @@ public abstract class Database {
                                 }
                             }
                         }
-                        statement.execute("DROP TABLE IF EXISTS plotmeDenied");
-                        statement.execute("DROP TABLE IF EXISTS plotmeAllowed");
-                        statement.execute("DROP TABLE IF EXISTS plotmePlots");
-                        statement.execute("DROP TABLE IF EXISTS plotmeMetadata");
-                        statement.execute("DROP TABLE IF EXISTS plotmeComments");
-                        statement.execute("DROP TABLE IF EXISTS plotmeFreed");
                         legacyConnection().commit();
                         getConnection().commit();
                     } catch (SQLException e) {

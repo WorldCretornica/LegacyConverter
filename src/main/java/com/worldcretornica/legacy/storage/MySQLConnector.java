@@ -6,12 +6,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class MySQLConnector extends Database {
 
     private final String url;
     private final String userName;
     private final char[] password;
+    private Properties props;
 
     public MySQLConnector(String url, String userName, char[] password) {
         this.url = url;
@@ -23,8 +25,8 @@ public class MySQLConnector extends Database {
     public Connection startConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, userName, password);
-            connection.setAutoCommit(false);
+            connection = DriverManager.getConnection(url, userName, String.valueOf(password));
+            connection.setAutoCommit(true);
             return connection;
         } catch (SQLException | ClassNotFoundException e) {
             return null;
@@ -99,10 +101,6 @@ public class MySQLConnector extends Database {
         }
     }
 
-    /**
-     * @deprecated Legacy Code for 0.16.3 to 0.17 Update. To be removed in 0.18 or 0.19
-     */
-    @Deprecated
     boolean tableExists(String name) {
         try {
             DatabaseMetaData dbm = legacyConnection().getMetaData();

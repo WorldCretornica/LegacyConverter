@@ -1,5 +1,6 @@
 package com.worldcretornica.legacy;
 
+import com.worldcretornica.legacy.storage.Database;
 import com.worldcretornica.legacy.storage.MySQLConnector;
 import com.worldcretornica.legacy.storage.SQLiteConnector;
 
@@ -38,6 +39,7 @@ public class Main extends JDialog {
     private ButtonGroup databaseButtons;
     private File sqliteFile = null;
     private File sqliteFileDirectory = null;
+    private Database sqlConnector;
 
     public Main() {
         setContentPane(contentPane);
@@ -79,6 +81,7 @@ public class Main extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 mySQLOptions.setVisible(false);
                 sqlliteOptions.setVisible(true);
+                pack();
 
             }
         });
@@ -87,6 +90,7 @@ public class Main extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 mySQLOptions.setVisible(true);
                 sqlliteOptions.setVisible(false);
+                pack();
             }
         });
         choosePlotMeDatabaseFileButton.addActionListener(new ActionListener() {
@@ -104,7 +108,6 @@ public class Main extends JDialog {
     public static void main(String[] args) {
         Main dialog = new Main();
         dialog.setTitle("PlotMe LegacyConverter");
-        dialog.setSize(3000, 3000);
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
@@ -112,12 +115,14 @@ public class Main extends JDialog {
 
     private void onOK() {
         if (mySQLRadioButton.isSelected()) {
-            new MySQLConnector(mySQLURL.getText(), username.getText(), password.getPassword());
+            sqlConnector = new MySQLConnector(mySQLURL.getText(), username.getText(), password.getPassword());
         } else if (SQLiteRadioButton.isSelected()) {
-            new SQLiteConnector(sqliteFile.)
+            sqlConnector = new SQLiteConnector(sqliteFile, sqliteFileDirectory);
         } else {
             //error
         }
+        sqlConnector.createTables();
+        sqlConnector.legacyConverter();
         dispose();
     }
 

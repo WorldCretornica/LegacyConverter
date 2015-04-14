@@ -16,7 +16,7 @@ public class MySQLConnector extends Database {
     private Properties props;
 
     public MySQLConnector(String url, String userName, char[] password) {
-        this.url = url;
+        this.url = "jdbc:mysql://" + url;
         this.userName = userName;
         this.password = password;
     }

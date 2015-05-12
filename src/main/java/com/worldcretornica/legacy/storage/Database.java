@@ -63,7 +63,7 @@ public abstract class Database {
                     int idX = setPlots.getInt("idX");
                     int idZ = setPlots.getInt("idZ");
                     String owner = setPlots.getString("owner");
-                    String world = setPlots.getString("world");
+                    String world = setPlots.getString("world").toLowerCase();
                     int topX = setPlots.getInt("topX");
                     int bottomX = setPlots.getInt("bottomX");
                     int topZ = setPlots.getInt("topZ");

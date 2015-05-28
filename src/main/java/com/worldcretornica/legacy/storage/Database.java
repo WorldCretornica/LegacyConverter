@@ -1,9 +1,9 @@
 package com.worldcretornica.legacy.storage;
 
 
+import com.worldcretornica.legacy.Plot;
+import com.worldcretornica.legacy.PlotId;
 import com.worldcretornica.legacy.UUIDFetcher;
-import com.worldcretornica.plotme_core.Plot;
-import com.worldcretornica.plotme_core.PlotId;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -60,8 +60,7 @@ public abstract class Database {
         try (Statement slstatement = conn.createStatement()) {
             try (ResultSet setPlots = slstatement.executeQuery("SELECT * FROM plotmePlots")) {
                 while (setPlots.next()) {
-                    int idX = setPlots.getInt("idX");
-                    int idZ = setPlots.getInt("idZ");
+                    PlotId id = new PlotId(setPlots.getInt("idX"), setPlots.getInt("idZ"));
                     String owner = setPlots.getString("owner");
                     String world = setPlots.getString("world").toLowerCase();
                     int topX = setPlots.getInt("topX");
@@ -108,8 +107,9 @@ public abstract class Database {
                             }
                         }
                         try (Statement slMetadata = conn.createStatement(); ResultSet setMetadata =
-                                slMetadata.executeQuery("SELECT pluginname, propertyname, propertyvalue FROM plotmeMetadata WHERE idX = '" + idX +
-                                        "' AND idZ = '" + idZ + "' AND world = '" + world + "'")) {
+                                slMetadata
+                                        .executeQuery("SELECT pluginname, propertyname, propertyvalue FROM plotmeMetadata WHERE idX = '" + id.getX() +
+                                                "' AND idZ = '" + id.getZ() + "' AND world = '" + world + "'")) {
                             while (setMetadata.next()) {
                                 String pluginname = setMetadata.getString("pluginname");
                                 String propertyname = setMetadata.getString("propertyname");
@@ -122,9 +122,8 @@ public abstract class Database {
 
                         }
                         HashSet<String> likers = new HashSet<>();
-                        Plot plot = new Plot(internalID, owner, ownerId, world, biome,
-                                expireddate, allowed, denied, likers, new PlotId(idX, idZ), customprice, forsale, finished, finisheddate, protect,
-                                metadata, 0, null, topX, bottomX, topZ, bottomZ);
+                        Plot plot = new Plot(internalID, owner, ownerId, world, biome, expireddate, allowed, denied, likers, id, customprice, forsale,
+                                finished, finisheddate, protect, metadata, 0, null, topX, bottomX, topZ, bottomZ, null);
                         addPlot(plot);
                         internalID++;
                     }
@@ -139,7 +138,7 @@ public abstract class Database {
         try (PreparedStatement ps = getConnection().prepareStatement(
                 "INSERT INTO plotmecore_plots(id, plotX, plotZ, world, ownerID, owner, biome, finished, finishedDate, forSale, price, protected, "
                         + "expiredDate, topX, topZ, bottomX, bottomZ, plotLikes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
-            ps.setInt(1, plot.getInternalID());
+            ps.setLong(1, plot.getInternalID());
             ps.setInt(2, plot.getId().getX());
             ps.setInt(3, plot.getId().getZ());
             ps.setString(4, plot.getWorld().toLowerCase());
@@ -163,9 +162,9 @@ public abstract class Database {
             e.printStackTrace();
 
         }
-        for (String allowed : plot.getAllowed().keySet()) {
+        for (String allowed : plot.getMembers().keySet()) {
             try (PreparedStatement ps = getConnection().prepareStatement("INSERT INTO plotmecore_allowed(plot_id, player, access) VALUES (?,?,?)")) {
-                ps.setInt(1, plot.getInternalID());
+                ps.setLong(1, plot.getInternalID());
                 ps.setString(2, allowed);
                 ps.setInt(3, Plot.AccessLevel.ALLOWED.getLevel());
                 ps.executeUpdate();
@@ -176,7 +175,7 @@ public abstract class Database {
         }
         for (String denied : plot.getDenied()) {
             try (PreparedStatement ps = getConnection().prepareStatement("INSERT INTO plotmecore_denied(plot_id, player) VALUES (?,?)")) {
-                ps.setInt(1, plot.getInternalID());
+                ps.setLong(1, plot.getInternalID());
                 ps.setString(2, denied);
                 ps.executeUpdate();
                 getConnection().commit();
@@ -191,7 +190,7 @@ public abstract class Database {
                 //Plots
                 try (PreparedStatement ps = getConnection()
                         .prepareStatement("INSERT INTO plotmecore_metadata(plot_id, pluginName, propertyName, propertyValue) VALUES(?,?,?,?)")) {
-                    ps.setInt(1, plot.getInternalID());
+                    ps.setLong(1, plot.getInternalID());
                     ps.setString(2, pluginname);
                     ps.setString(3, propertyname);
                     ps.setString(4, pluginproperties.get(propertyname));

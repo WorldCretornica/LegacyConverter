@@ -1,20 +1,25 @@
 package com.worldcretornica.legacy.storage;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class MySQLConnector extends Database {
+public class PlotMeMySQLConnector extends Database {
 
     private final String url;
     private final String userName;
     private final char[] password;
+    private final String port;
+    private final String database;
 
-    public MySQLConnector(String url, String userName, char[] password) {
-        this.url = "jdbc:mysql://" + url;
+    public PlotMeMySQLConnector(String url, String port, String database, String userName, char[] password) {
+        this.url = url;
+        this.port = port;
+        this.database = database;
         this.userName = userName;
         this.password = password;
     }
@@ -22,11 +27,16 @@ public class MySQLConnector extends Database {
     @Override
     public Connection startConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, userName, String.valueOf(password));
+            MysqlDataSource mysqlDataSource = new MysqlDataSource();
+            mysqlDataSource.setURL(url);
+            mysqlDataSource.setPort(Integer.parseInt(port));
+            mysqlDataSource.setUser(userName);
+            mysqlDataSource.setPassword(new String(password));
+            mysqlDataSource.setDatabaseName(database);
+            connection = mysqlDataSource.getConnection();
             connection.setAutoCommit(false);
             return connection;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             return null;
         }
 

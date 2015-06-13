@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,7 +57,7 @@ public abstract class Database {
     public abstract void createTables();
 
     public void legacyConverter() {
-        int internalID = 1;
+        long internalID = 1;
         Connection conn = getConnection();
         try (Statement slstatement = conn.createStatement()) {
             try (ResultSet setPlots = slstatement.executeQuery("SELECT * FROM plotmePlots")) {
@@ -72,7 +74,7 @@ public abstract class Database {
                     boolean finished = setPlots.getBoolean("finished");
                     HashMap<String, Plot.AccessLevel> allowed = new HashMap<>();
                     HashSet<String> denied = new HashSet<>();
-                    double customprice = setPlots.getDouble("customprice");
+                    double price = setPlots.getDouble("price");
                     boolean forsale = setPlots.getBoolean("forsale");
                     String finisheddate = setPlots.getString("finisheddate");
                     boolean protect = setPlots.getBoolean("protected");
@@ -82,7 +84,8 @@ public abstract class Database {
                     if (byOwner != null) {
                         UUID ownerId = UUIDFetcher.fromBytes(byOwner);
                         try (Statement slAllowed = conn.createStatement(); ResultSet setAllowed = slAllowed.executeQuery(
-                                "SELECT * FROM plotmeAllowed WHERE idX = '" + idX + "' AND idZ = '" + idZ + "' AND world = '" + world + "'")) {
+                                "SELECT * FROM plotmeAllowed WHERE idX = '" + id.getX() + "' AND idZ = '" + id.getZ() + "' AND world = '" + world
+                                        + "'")) {
                             while (setAllowed.next()) {
                                 byte[] byPlayerId = setAllowed.getBytes("playerid");
                                 if (setAllowed.getString("player").equalsIgnoreCase("*")) {
@@ -94,8 +97,8 @@ public abstract class Database {
                             }
                         }
                         try (Statement slDenied = conn.createStatement();
-                                ResultSet setDenied = slDenied.executeQuery("SELECT * FROM plotmeDenied WHERE idX = '" + idX +
-                                        "' AND idZ = '" + idZ + "' AND world = '" + world + "'")) {
+                                ResultSet setDenied = slDenied.executeQuery("SELECT * FROM plotmeDenied WHERE idX = '" + id.getX() +
+                                        "' AND idZ = '" + id.getZ() + "' AND world = '" + world + "'")) {
                             while (setDenied.next()) {
                                 byte[] byPlayerId = setDenied.getBytes("playerid");
                                 if (setDenied.getString("player").equalsIgnoreCase("*")) {
@@ -121,9 +124,12 @@ public abstract class Database {
                             }
 
                         }
-                        HashSet<String> likers = new HashSet<>();
-                        Plot plot = new Plot(internalID, owner, ownerId, world, biome, expireddate, allowed, denied, likers, id, customprice, forsale,
-                                finished, finisheddate, protect, metadata, 0, null, topX, bottomX, topZ, bottomZ, null);
+                        HashSet<UUID> likers = new HashSet<>();
+                        Plot plot =
+                                new Plot(internalID, owner, ownerId, world, biome, expireddate, allowed, denied, likers, id, price, forsale, finished,
+                                        finisheddate, protect, metadata, 0, null, topX, topZ, bottomX, bottomZ,
+                                        new SimpleDateFormat("yyyy-MM-dd").format(
+                                                Calendar.getInstance().getTime()));
                         addPlot(plot);
                         internalID++;
                     }
@@ -136,7 +142,8 @@ public abstract class Database {
 
     public void addPlot(Plot plot) {
         try (PreparedStatement ps = getConnection().prepareStatement(
-                "INSERT INTO plotmecore_plots(id, plotX, plotZ, world, ownerID, owner, biome, finished, finishedDate, forSale, price, protected, "
+                "INSERT INTO plotmecore_plots(plot_id, plotX, plotZ, world, ownerID, owner, biome, finished, finishedDate, forSale, price, "
+                        + "protected, "
                         + "expiredDate, topX, topZ, bottomX, bottomZ, plotLikes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
             ps.setLong(1, plot.getInternalID());
             ps.setInt(2, plot.getId().getX());

@@ -16,24 +16,9 @@ public class PlotId {
         this.z = Integer.parseInt(id.substring(id.indexOf(';') + 1));
     }
 
-    /**
-     * Check if the string is in the plot id format
-     *
-     * @param id id value to be checked
-     * @return true if the id is valid, false otherwise
-     */
-    public static boolean isValidID(String id) {
-        String[] coords = id.split(";");
-        if (coords.length == 2) {
-            try {
-                Integer.parseInt(coords[0]);
-                Integer.parseInt(coords[1]);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        return false;
+    public PlotId() {
+        this.x = 0;
+        this.z = 0;
     }
 
     public int getX() {

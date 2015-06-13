@@ -32,7 +32,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.worldcretornica.legacy.Main</mainClass>
+                            <mainClass>com.worldcretornica.legacy.Start</mainClass>
                             <addClasspath>true</addClasspath>
                         </manifest>
                     </archive>

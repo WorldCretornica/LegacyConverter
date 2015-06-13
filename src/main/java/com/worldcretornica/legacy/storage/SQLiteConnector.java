@@ -16,6 +16,7 @@ public class SQLiteConnector extends Database {
 
     public SQLiteConnector(File coreDB) {
         this.legacyURL = "jdbc:sqlite:" + coreDB.getAbsolutePath();
+        createTables();
     }
 
     /**

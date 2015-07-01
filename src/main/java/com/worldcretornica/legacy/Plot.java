@@ -1,8 +1,5 @@
 package com.worldcretornica.legacy;
 
-import com.worldcretornica.plotme_core.PlotMeCoreManager;
-import com.worldcretornica.plotme_core.api.IOfflinePlayer;
-
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,7 +13,6 @@ public class Plot {
     private final HashMap<String, Plot.AccessLevel> allowed = new HashMap<>();
     private final HashSet<String> denied = new HashSet<>();
     private final HashMap<String, Map<String, String>> metadata = new HashMap<>();
-    private final PlotMeCoreManager manager = PlotMeCoreManager.getInstance();
     private final int plotTopZ;
     private final int plotBottomZ;
     private final int plotBottomX;
@@ -32,11 +28,8 @@ public class Plot {
     private boolean forSale = false;
     private String finishedDate = null;
     private boolean protect = false;
-    private int likes = 0;
     //defaults to 0 until it is saved to the database
     private long internalID = 0;
-    private String plotName;
-    private HashSet<UUID> likers = new HashSet<>();
     private int plotTopX;
 
     public Plot(String owner, UUID uuid, String world, PlotId plotId, int bottomX, int bottomZ, int topX, int topZ) {
@@ -55,8 +48,8 @@ public class Plot {
             HashMap<String, AccessLevel> allowed,
             HashSet<String>
                     denied,
-            HashSet<UUID> likers, PlotId id, double price, boolean forSale, boolean finished, String finishedDate, boolean protect,
-            Map<String, Map<String, String>> metadata, int plotLikes, String plotName, int topX, int topZ, int bottomX, int bottomZ,
+            PlotId id, double price, boolean forSale, boolean finished, String finishedDate, boolean protect,
+            Map<String, Map<String, String>> metadata, int topX, int topZ, int bottomX, int bottomZ,
             String createdDate) {
         this.internalID = internalID;
         this.owner = owner;
@@ -72,9 +65,6 @@ public class Plot {
         this.forSale = forSale;
         this.finishedDate = finishedDate;
         this.protect = protect;
-        this.likers.addAll(likers);
-        this.plotName = plotName;
-        this.likes = plotLikes;
         this.denied.addAll(denied);
         this.metadata.putAll(metadata);
         this.plotTopX = topX;
@@ -82,22 +72,6 @@ public class Plot {
         this.plotBottomX = bottomX;
         this.plotBottomZ = bottomZ;
         this.createdDate = createdDate;
-    }
-
-    public void resetExpire(int days) {
-        if (days == 0) {
-            if (getExpiredDate() != null) {
-                setExpiredDate(null);
-            }
-        } else {
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_YEAR, days);
-            java.util.Date utlDate = cal.getTime();
-            java.sql.Date temp = new java.sql.Date(utlDate.getTime());
-            if (expiredDate == null || temp.after(expiredDate)) {
-                expiredDate = temp;
-            }
-        }
     }
 
     public String getBiome() {
@@ -129,90 +103,6 @@ public class Plot {
         return denied;
     }
 
-    public void addMember(String name, AccessLevel level) {
-        if (!isAllowedConsulting(name)) {
-            getMembers().put(name, level);
-        }
-    }
-
-    public void addDenied(String name) {
-        if (!isDeniedConsulting(name)) {
-            getDenied().add(name);
-        }
-    }
-
-    public void removeAllowed(String name) {
-        if (getMembers().containsKey(name)) {
-            getMembers().remove(name, AccessLevel.ALLOWED);
-        }
-    }
-
-    public void removeMember(String name) {
-        if (getMembers().containsKey(name)) {
-            getMembers().remove(name);
-        }
-    }
-
-    public void removeDenied(String name) {
-        if (getDenied().contains(name)) {
-            getDenied().remove(name);
-        }
-    }
-
-    public void removeAllAllowed() {
-        getMembers().clear();
-    }
-
-    public void removeAllDenied() {
-        getDenied().clear();
-    }
-
-    public boolean isAllowedConsulting(String name) {
-        if ("*".equals(name)) {
-            return isAllowedInternal(name);
-        }
-        UUID player = manager.getPlayer(name).getUniqueId();
-        return player != null && isAllowedInternal(name);
-    }
-
-    public boolean isAllowed(UUID uuid) {
-        return isAllowedInternal(uuid.toString());
-    }
-
-    public boolean isAllowed(String uuid) {
-        return isAllowedInternal(uuid);
-    }
-
-    private boolean isAllowedInternal(String name) {
-        if (getMembers().containsKey(name)) {
-            AccessLevel accessLevel = getMembers().get(name);
-            if (accessLevel == AccessLevel.ALLOWED) {
-                return true;
-            } else if ("*".equals(name)) {
-                return false;
-            }
-            if (accessLevel == AccessLevel.TRUSTED) {
-                return manager.getPlayer(name) != null;
-            }
-        } else {
-            return getMembers().containsKey("*");
-        }
-        return false;
-    }
-
-    public boolean isDeniedConsulting(String name) {
-        IOfflinePlayer player = manager.getPlayer(name);
-        return player != null && isDeniedInternal(name);
-    }
-
-    public boolean isDenied(UUID uuid) {
-        return isDeniedInternal(uuid.toString());
-    }
-
-    public boolean isDeniedInternal(String name) {
-        return getDenied().contains("*") || getDenied().contains(name);
-    }
-
     /**
      * A map of allowed and trusted players
      * @return allowed and trusted player map
@@ -231,10 +121,6 @@ public class Plot {
 
     public final Date getExpiredDate() {
         return expiredDate;
-    }
-
-    public final void setExpiredDate(Date expiredDate) {
-        this.expiredDate = expiredDate;
     }
 
     public final boolean isFinished() {
@@ -267,10 +153,6 @@ public class Plot {
         return price;
     }
 
-    public final void setPrice(double price) {
-        this.price = price;
-    }
-
     /**
      * Checks if this plot is able to be sold
      * @return true if it is for sale, false otherwise
@@ -301,22 +183,6 @@ public class Plot {
         return protect;
     }
 
-    public final void setProtected(boolean protect) {
-        this.protect = protect;
-    }
-
-    public String getPlotProperty(String pluginname, String property) {
-        return metadata.get(pluginname).get(property);
-    }
-
-    public boolean setPlotProperty(String pluginname, String property, String value) {
-        if (!metadata.containsKey(pluginname)) {
-            metadata.put(pluginname, new HashMap<String, String>());
-        }
-        metadata.get(pluginname).put(property, value);
-        return true;
-    }
-
     public Map<String, Map<String, String>> getAllPlotProperties() {
         return metadata;
     }
@@ -339,27 +205,6 @@ public class Plot {
         this.internalID = internalID;
     }
 
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
-    }
-
-    public void addLike(int likes, UUID player) {
-        this.getLikers().add(player);
-        this.likes = likes;
-    }
-
-    public String getPlotName() {
-        return plotName;
-    }
-
-    public void setPlotName(String plotName) {
-        this.plotName = plotName;
-    }
-
     public int getTopX() {
         return plotTopX;
     }
@@ -378,48 +223,6 @@ public class Plot {
 
     public String getCreatedDate() {
         return createdDate;
-    }
-
-    public void addDenied(HashSet<String> denied) {
-        this.denied.addAll(denied);
-    }
-
-    public void addMembers(HashMap<String, AccessLevel> allowed) {
-        this.allowed.putAll(allowed);
-    }
-
-    /**
-     * Gets a set of players who have liked this plot
-     * @return
-     */
-    public HashSet<UUID> getLikers() {
-        return likers;
-    }
-
-    public void setLikers(HashSet<UUID> likers) {
-        this.likers = likers;
-    }
-
-    //todo test equals to make sure it is reliable.
-    @Override public boolean equals(Object obj) {
-        if (obj instanceof Plot) {
-            Plot obj1 = (Plot) obj;
-            if (obj1.getInternalID() == this.internalID && obj1.getId().equals(this.id) && obj1.getOwnerId().equals(this.ownerId) && obj1.getWorld()
-                    .equals(this.world)) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    public boolean canPlayerLike(UUID uniqueId) {
-        return !likers.contains(uniqueId);
-    }
-
-    public void removeLike(int i, UUID uniqueId) {
-        likes -= i;
-        likers.remove(uniqueId);
     }
 
 

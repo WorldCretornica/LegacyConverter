@@ -11,11 +11,6 @@ public class PlotId {
         this.z = z;
     }
 
-    public PlotId(String id) throws NumberFormatException {
-        this.x = Integer.parseInt(id.substring(0, id.indexOf(';')));
-        this.z = Integer.parseInt(id.substring(id.indexOf(';') + 1));
-    }
-
     public PlotId() {
         this.x = 0;
         this.z = 0;

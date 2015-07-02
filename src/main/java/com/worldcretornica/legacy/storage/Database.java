@@ -44,6 +44,8 @@ public abstract class Database {
 
     public void start() {
         long start = System.nanoTime();
+        startConnection();
+        createTables();
         legacyConverter();
         System.out.println(System.nanoTime() - start);
         System.out.println("FINISHED!");
@@ -151,8 +153,8 @@ public abstract class Database {
     }
 
     public void addPlot(Plot plot) {
-        System.out.println(plot.getId().getID());
-        System.out.println(plot.getWorld().toLowerCase());
+        System.out.println("Plot: " + plot.getId().getID() + " World: " + plot.getWorld().toLowerCase());
+        System.out.println("Owner: " + plot.getOwnerId() + "(" + plot.getOwner() + ")");
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO plotmecore_plots(plot_id,plotX, plotZ, world, ownerID, owner, biome, finished, finishedDate, forSale, price, protected, "
                         + "expiredDate, topX, topZ, bottomX, bottomZ, plotLikes, createdDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {

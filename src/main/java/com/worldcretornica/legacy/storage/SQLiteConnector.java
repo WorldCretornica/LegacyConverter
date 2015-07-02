@@ -1,6 +1,5 @@
 package com.worldcretornica.legacy.storage;
 
-import javafx.stage.Stage;
 import org.sqlite.SQLiteConfig;
 
 import java.io.File;
@@ -13,11 +12,8 @@ public class SQLiteConnector extends Database {
 
     private final String legacyURL;
 
-    public SQLiteConnector(File coreDB, Stage stage) {
-        super();
+    public SQLiteConnector(File coreDB) {
         this.legacyURL = "jdbc:sqlite:" + coreDB.getAbsolutePath();
-        startConnection();
-        createTables();
     }
 
     /**

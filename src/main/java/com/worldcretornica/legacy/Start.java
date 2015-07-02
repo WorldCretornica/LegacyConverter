@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
@@ -25,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 
 /**
@@ -39,6 +39,27 @@ public class Start extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        if (GraphicsEnvironment
+                .isHeadless()) {
+            if (args.length == 2) {
+                if ("sqlite".equalsIgnoreCase(args[0])) {
+                    File sqlfileHL = new File(args[1]);
+                    SQLiteConnector sqLiteConnector = new SQLiteConnector(sqlfileHL);
+                    sqLiteConnector.start();
+
+                }
+            } else if (args.length == 4) {
+                if ("mysql".equalsIgnoreCase(args[0])) {
+                    PlotMeMySQLConnector mySQLConnector = new PlotMeMySQLConnector(args[1], args[2], args[3]);
+                    mySQLConnector.start();
+                }
+            } else {
+                System.out.println("Invalid Syntax. The here are two examples of the commands you can run: ");
+                System.out.println("java -jar sqlite C:\\Users\\Matthew\\Server\\plugins\\PlotMe\\plots.db");
+                System.out.println("java -jar mysql jdbc:mysql://localhost:3306/minecraft username password");
+
+            }
+        }
         launch(args);
     }
 
@@ -58,28 +79,22 @@ public class Start extends Application {
 
     private Node plotMeMySQLConverter(Stage stage) {
         GridPane pane = new GridPane();
-        final Label urlLabel = new Label("URL");
-        final Label portLabel = new Label("Port");
+        final Label urlLabel = new Label("MySQL URL");
         final Label usernameLabel = new Label("Username");
         final Label passwordLabel = new Label("Password");
-        final Label databaseLabel = new Label("Database");
-        final TextField url = new TextField("localhost");
-        final TextField port = new TextField("3306");
+        final TextField url = new TextField("jdbc:mysql://localhost:3306/minecraft");
         final TextField username = new TextField("root");
-        final PasswordField password = new PasswordField();
-        final TextField database = new TextField("minecraft");
+        final TextField password = new TextField();
         final Button convert = new Button("Convert");
         convert.setOnAction(event -> {
-            if (url.getText() != null && !url.getText().isEmpty() && port.getText() != null && !port.getText().isEmpty() && password.getText() != null
-                    && !password.getText().isEmpty() && database.getText() != null && !database.getText().isEmpty()) {
+            if (url.getText() != null && !url.getText().isEmpty() && password.getText() != null
+                    && !password.getText().isEmpty()) {
                 Task<Void> task = new Task<Void>() {
 
                     @Override protected Void call() throws Exception {
-                        String port_2 = port.getText();
-                        int port_1 = Integer.parseInt(port_2);
                         PlotMeMySQLConnector mySQLConnector =
-                                new PlotMeMySQLConnector(url.getText(), port_1, database.getText(), username.getText(), password
-                                        .getText(), stage);
+                                new PlotMeMySQLConnector(url.getText(), username.getText(), password
+                                        .getText());
                         mySQLConnector.start();
                         return null;
                     }
@@ -101,15 +116,11 @@ public class Start extends Application {
         convert.setAlignment(Pos.CENTER);
         pane.add(urlLabel, 0, 0);
         pane.add(url, 1, 0);
-        pane.add(portLabel, 0, 1);
-        pane.add(port, 1, 1);
-        pane.add(databaseLabel, 0, 2);
-        pane.add(database, 1, 2);
-        pane.add(usernameLabel, 0, 3);
-        pane.add(username, 1, 3);
-        pane.add(passwordLabel, 0, 4);
-        pane.add(password, 1, 4);
-        pane.add(convert, 0, 5);
+        pane.add(usernameLabel, 0, 1);
+        pane.add(username, 1, 1);
+        pane.add(passwordLabel, 0, 2);
+        pane.add(password, 1, 2);
+        pane.add(convert, 0, 3);
         return pane;
     }
 
@@ -153,7 +164,7 @@ public class Start extends Application {
                 Task<Void> task = new Task<Void>() {
 
                     @Override protected Void call() throws Exception {
-                        SQLiteConnector sqLiteConnector = new SQLiteConnector(sqlfile, stage);
+                        SQLiteConnector sqLiteConnector = new SQLiteConnector(sqlfile);
                         sqLiteConnector.start();
                         return null;
                     }

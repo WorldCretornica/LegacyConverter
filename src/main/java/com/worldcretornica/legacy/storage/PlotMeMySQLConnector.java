@@ -1,7 +1,5 @@
 package com.worldcretornica.legacy.storage;
 
-import javafx.stage.Stage;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,30 +10,24 @@ public class PlotMeMySQLConnector extends Database {
     private final String url;
     private final String userName;
     private final String password;
-    private final int port;
-    private final String database;
 
-    public PlotMeMySQLConnector(String url, int port, String database, String userName, String password, Stage stage) {
-        super();
+    public PlotMeMySQLConnector(String url, String userName, String password) {
         this.url = url;
-        this.port = port;
-        this.database = database;
         this.userName = userName;
         this.password = password;
-        startConnection();
-        createTables();
     }
 
     @Override
     public Connection startConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            String link = "jdbc:mysql://" + url + ":" + port + "/" + database;
-            connection = DriverManager.getConnection(link, userName, password);
+            System.out.println("connection url: " + url + " username: " + userName + " password: " + password);
+            connection = DriverManager.getConnection(url, userName, password);
             connection.setAutoCommit(false);
             return connection;
         } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("ERROR!!!!!!");
+            System.out.println("PlotMe could not establish a connection to the MySQL database:");
+            System.out.println(e.getMessage());
             return null;
         }
     }

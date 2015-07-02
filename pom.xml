@@ -35,6 +35,20 @@
                                     <include>mysql:mysql-connector-java</include>
                                 </includes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.sqlite</pattern>
+                                    <shadedPattern>com.worldcretornica.legacy.sqlite</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.gjt</pattern>
+                                    <shadedPattern>com.worldcretornica.legacy.driver</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.mysql</pattern>
+                                    <shadedPattern>com.worldcretornica.legacy.mysql</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -46,6 +60,8 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                    <optimize>true</optimize>
                 </configuration>
             </plugin>
             <plugin>

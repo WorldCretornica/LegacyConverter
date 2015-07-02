@@ -227,24 +227,12 @@ public class Plot {
 
 
     public enum AccessLevel {
-        ALLOWED(0),
-        TRUSTED(1);
+        ALLOWED(0);
 
         private final int level;
 
         AccessLevel(int accessLevel) {
             level = accessLevel;
-        }
-
-        public static AccessLevel getAccessLevel(int level) {
-            switch (level) {
-                case 0:
-                    return ALLOWED;
-                case 1:
-                    return TRUSTED;
-                default:
-                    return ALLOWED;
-            }
         }
 
         public int getLevel() {

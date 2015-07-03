@@ -40,7 +40,7 @@ public class Start extends Application {
      */
     public static void main(String[] args) {
         if (GraphicsEnvironment
-                .isHeadless()) {
+                .isHeadless() || args.length != 0) {
             if (args.length == 2) {
                 if ("sqlite".equalsIgnoreCase(args[0])) {
                     File sqlfileHL = new File(args[1]);
@@ -55,12 +55,12 @@ public class Start extends Application {
                 }
             } else {
                 System.out.println("Invalid Syntax. The here are two examples of the commands you can run: ");
-                System.out.println("java -jar sqlite C:\\Users\\Matthew\\Server\\plugins\\PlotMe\\plots.db");
-                System.out.println("java -jar mysql jdbc:mysql://localhost:3306/minecraft username password");
-
+                System.out.println("java -jar LegacyConverter.jar sqlite C:\\Users\\Matthew\\Server\\plugins\\PlotMe\\plots.db");
+                System.out.println("java -jar LegacyConverter.jar mysql jdbc:mysql://localhost:3306/minecraft username password");
             }
+        } else {
+            launch(args);
         }
-        launch(args);
     }
 
     @Override

@@ -44,8 +44,6 @@ public abstract class Database {
 
     public void start() {
         long start = System.nanoTime();
-        startConnection();
-        createTables();
         legacyConverter();
         System.out.println(System.nanoTime() - start);
         System.out.println("FINISHED!");

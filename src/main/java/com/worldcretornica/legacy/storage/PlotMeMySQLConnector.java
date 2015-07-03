@@ -15,6 +15,8 @@ public class PlotMeMySQLConnector extends Database {
         this.url = url;
         this.userName = userName;
         this.password = password;
+        startConnection();
+        createTables();
     }
 
     @Override

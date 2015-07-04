@@ -68,6 +68,16 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.1.2</version>
+                <configuration>
+                    <appName>LegacyConverter</appName>
+                    <jfxMainAppJarName>LegacyConverter</jfxMainAppJarName>
+                    <mainClass>com.worldcretornica.legacy.Start</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

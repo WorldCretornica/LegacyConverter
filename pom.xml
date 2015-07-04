@@ -54,8 +54,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
+                    <jarName>LegacyConverter</jarName>
+                    <includes>
+                        <include>org.xerial:sqlite-jdbc</include>
+                        <include>mysql:mysql-connector-java</include>
+                    </includes>
                     <archive>
                         <manifest>
+                            <addClasspath>true</addClasspath>
                             <mainClass>com.worldcretornica.legacy.Start</mainClass>
                             <addClasspath>true</addClasspath>
                         </manifest>

@@ -1,10 +1,10 @@
 package com.worldcretornica.legacy.storage;
 
 import com.worldcretornica.legacy.Start;
+import org.sqlite.SQLiteConfig;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,11 +26,10 @@ public class SQLiteConnector extends Database {
     @Override
     public Connection startConnection() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection(legacyURL);
+            connection = new SQLiteConfig().createConnection(legacyURL);
             connection.setAutoCommit(false);
             return connection;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             Start.logger.severe(e.getMessage());
         }
         return null;

@@ -1,9 +1,9 @@
 package com.worldcretornica.legacy.storage;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import com.worldcretornica.legacy.Start;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -24,9 +24,10 @@ public class PlotMeMySQLConnector extends Database {
     @Override
     public Connection startConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
             Start.logger.info("connection url: " + url + " username: " + userName + " password: " + password);
-            connection = DriverManager.getConnection(url, userName, password);
+            MysqlDataSource mysqlDataSource = new MysqlDataSource();
+            mysqlDataSource.setUrl(url);
+            connection = mysqlDataSource.getConnection(userName, password);
             connection.setAutoCommit(false);
             return connection;
         } catch (SQLException e) {
@@ -34,10 +35,6 @@ public class PlotMeMySQLConnector extends Database {
             Start.logger.severe("SQLException: " + e.getMessage());
             Start.logger.severe("SQLState: " + e.getSQLState());
             Start.logger.severe("VendorError: " + e.getErrorCode());
-            return null;
-        } catch (ClassNotFoundException e) {
-            Start.logger.info("PlotMe could not establish a connection to the MySQL database:");
-            Start.logger.severe("Not a SQL Error: " + e.getMessage());
             return null;
         }
     }

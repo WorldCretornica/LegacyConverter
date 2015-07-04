@@ -3,6 +3,7 @@ package com.worldcretornica.legacy.storage;
 
 import com.worldcretornica.legacy.Plot;
 import com.worldcretornica.legacy.PlotId;
+import com.worldcretornica.legacy.Start;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
@@ -35,7 +36,7 @@ public abstract class Database {
             try {
                 connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                Start.logger.severe(e.getMessage());
             }
         }
     }
@@ -45,8 +46,8 @@ public abstract class Database {
     public void start() {
         long start = System.nanoTime();
         legacyConverter();
-        System.out.println(System.nanoTime() - start);
-        System.out.println("FINISHED!");
+        Start.logger.info(String.valueOf(System.nanoTime() - start));
+        Start.logger.info("FINISHED!");
         closeConnection();
     }
 
@@ -131,7 +132,7 @@ public abstract class Database {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Start.logger.severe(e.getMessage());
         }
     }
 
@@ -147,12 +148,14 @@ public abstract class Database {
             statement.execute("DELETE FROM plotmecore_nextid;");
             statement.execute("INSERT INTO plotmecore_nextid VALUES (" + id + ");");
         } catch (SQLException e) {
+            Start.logger.severe(e.getMessage());
+
         }
     }
 
     public void addPlot(Plot plot) {
-        System.out.println("Plot: " + plot.getId().getID() + " World: " + plot.getWorld().toLowerCase());
-        System.out.println("Owner: " + plot.getOwnerId() + "(" + plot.getOwner() + ")");
+        Start.logger.info("Plot: " + plot.getId().getID() + " World: " + plot.getWorld().toLowerCase());
+        Start.logger.info("Owner: " + plot.getOwnerId() + "(" + plot.getOwner() + ")");
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO plotmecore_plots(plot_id,plotX, plotZ, world, ownerID, owner, biome, finished, finishedDate, forSale, price, protected, "
                         + "expiredDate, topX, topZ, bottomX, bottomZ, plotLikes, createdDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
@@ -178,7 +181,7 @@ public abstract class Database {
             ps.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Start.logger.severe(e.getMessage());
 
         }
         for (String allowed : plot.getMembers().keySet()) {
@@ -189,7 +192,7 @@ public abstract class Database {
                 ps.executeUpdate();
                 connection.commit();
             } catch (SQLException e) {
-                e.printStackTrace();
+                Start.logger.severe(e.getMessage());
             }
         }
         for (String denied : plot.getDenied()) {
@@ -199,7 +202,7 @@ public abstract class Database {
                 ps.executeUpdate();
                 connection.commit();
             } catch (SQLException e) {
-                e.printStackTrace();
+                Start.logger.severe(e.getMessage());
             }
         }
         Map<String, Map<String, String>> metadata = plot.getAllPlotProperties();
@@ -216,7 +219,7 @@ public abstract class Database {
                     ps.executeUpdate();
                     connection.commit();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    Start.logger.severe(e.getMessage());
                 }
             }
         }

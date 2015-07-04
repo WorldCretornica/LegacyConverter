@@ -3,6 +3,7 @@ package com.worldcretornica.legacy.storage;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import com.worldcretornica.legacy.Plot;
 import com.worldcretornica.legacy.PlotId;
+import com.worldcretornica.legacy.Start;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -148,7 +149,7 @@ public class PlotzMySQLConnector extends Database {
                     + ");");
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Start.logger.severe(e.getMessage());
         }
     }
 

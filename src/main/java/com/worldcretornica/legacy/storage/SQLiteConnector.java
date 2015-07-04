@@ -1,9 +1,10 @@
 package com.worldcretornica.legacy.storage;
 
-import org.sqlite.SQLiteConfig;
+import com.worldcretornica.legacy.Start;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,12 +26,14 @@ public class SQLiteConnector extends Database {
     @Override
     public Connection startConnection() {
         try {
-            connection = new SQLiteConfig().createConnection(legacyURL);
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection(legacyURL);
             connection.setAutoCommit(false);
             return connection;
-        } catch (SQLException e) {
-            return null;
+        } catch (SQLException | ClassNotFoundException e) {
+            Start.logger.severe(e.getMessage());
         }
+        return null;
     }
 
     @Override public void createTables() {
@@ -108,7 +111,7 @@ public class SQLiteConnector extends Database {
             }
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Start.logger.severe(e.getMessage());
         }
     }
 }

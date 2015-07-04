@@ -35,20 +35,6 @@
                                     <include>mysql:mysql-connector-java</include>
                                 </includes>
                             </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.sqlite</pattern>
-                                    <shadedPattern>com.worldcretornica.legacy.sqlite</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.gjt</pattern>
-                                    <shadedPattern>com.worldcretornica.legacy.driver</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.mysql</pattern>
-                                    <shadedPattern>com.worldcretornica.legacy.mysql</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

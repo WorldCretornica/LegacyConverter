@@ -25,20 +25,26 @@ public class PlotMeMySQLConnector extends Database {
     public Connection startConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            System.out.println("connection url: " + url + " username: " + userName + " password: " + password);
+            Start.logger.info("connection url: " + url + " username: " + userName + " password: " + password);
             connection = DriverManager.getConnection(url, userName, password);
             connection.setAutoCommit(false);
             return connection;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             Start.logger.info("PlotMe could not establish a connection to the MySQL database:");
-            Start.logger.severe(e.getMessage());
+            Start.logger.severe("SQLException: " + e.getMessage());
+            Start.logger.severe("SQLState: " + e.getSQLState());
+            Start.logger.severe("VendorError: " + e.getErrorCode());
+            return null;
+        } catch (ClassNotFoundException e) {
+            Start.logger.info("PlotMe could not establish a connection to the MySQL database:");
+            Start.logger.severe("Not a SQL Error: " + e.getMessage());
             return null;
         }
     }
 
     @Override
     public void createTables() {
-        try (Statement statement = startConnection().createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             //MySQL specific plot table creation.
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS `plotmecore_plots` ("
                     + "`plot_id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,"

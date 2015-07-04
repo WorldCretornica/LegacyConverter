@@ -38,7 +38,7 @@ public class PlotMeMySQLConnector extends Database {
 
     @Override
     public void createTables() {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = startConnection().createStatement()) {
             //MySQL specific plot table creation.
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS `plotmecore_plots` ("
                     + "`plot_id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,"

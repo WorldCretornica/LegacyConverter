@@ -4,6 +4,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import com.worldcretornica.legacy.Start;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -100,6 +101,17 @@ public class PlotMeMySQLConnector extends Database {
                     + "`propertyname` VARCHAR(100) NOT NULL,"
                     + "`propertyvalue` VARCHAR(255) DEFAULT NULL"
                     + ");");
+            connection.commit();
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS `plotmecore_nextid` (`nextId` INTEGER NOT NULL DEFAULT '0');");
+            connection.commit();
+            try (ResultSet results = statement.executeQuery("SELECT * FROM plotmecore_nextid;")) {
+                if (!results.next()) {
+                    statement.execute("INSERT INTO plotmecore_nextid VALUES(1);");
+                    this.nextPlotId = 1;
+                } else {
+                    this.nextPlotId = results.getLong("nextid");
+                }
+            }
             connection.commit();
         } catch (SQLException e) {
             Start.logger.severe(e.getMessage());
